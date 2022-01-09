@@ -3,7 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-void bubbleSort(char arr[][11], size_t);
+#define STR_LEN 20
+
+void bubbleSort(char arr[][STR_LEN], size_t);
 
 void removeSpecial(char *, size_t);
 
@@ -14,40 +16,65 @@ void swapChars(char *, char *);
 void swapStrings(char *, char *);
 
 int main() {
-    char arr[][11] = {"10/12/1990", "26/02/1991", "05/02/1966", "10/07/1997", "25/08/1966"};
-    int rows = sizeof(arr) / sizeof(arr[0]);
-    unsigned long len = strlen(*arr);
+    char string[STR_LEN] = {};
+    char file_name[30];
+    char stringArray[50][STR_LEN] = {};
+    int i = 0;
 
-
-    // printf("%zu", len);
-    // unsigned long newLen = strlen(*arr);
-
-    for (size_t i = 0; i < rows; i++) {
-        // remove special characters from string
-        // printf("%s", arr[i]);
-        removeSpecial(arr[i], len);
-
-        // sort dates into YYYYMMDD
-        reformatDate(arr[i]);
+    // declare file pointer
+    FILE *tsPtr;
+    // get file name from user (FINE), expecting "timestamps.txt"
+    printf("Enter the file to be opened:\n");
+    scanf("%s", file_name);
+    // check file name is correct (FINE)
+    if ((tsPtr = fopen(file_name, "r")) == NULL) {
+        printf("File could not be opened. Please try again:\n");
+        scanf("%s", file_name);
+    } else {
+        // output contents of user-chosen file, expecting timestamps.txt
+        // !! It's currently outputting everything except final string !!
+        printf("%s\n", "Timestamps");
+        // continue until EOF
+        while (!feof(tsPtr) && (fgets(string, STR_LEN, tsPtr) != NULL)) {
+            // append strings to string array
+            if (strlen(string) == STR_LEN - 1) {
+                strcpy(stringArray[i], string);
+                i++;
+            }
+        }
+        fclose(tsPtr);
     }
 
-    bubbleSort(arr, rows);
+    int rows = sizeof(stringArray) / sizeof(stringArray[0]);
 
-   /* for (int i = 0; i < rows; i++) {
-        printf("%s\n", arr[i]);
-    } */
+    for (size_t j = 0; j < rows; j++) {
+        // remove special characters from string
+        // printf("%s", arr[i]);
+        removeSpecial(stringArray[j], STR_LEN);
+
+        // sort dates into YYYYMMDD
+        reformatDate(stringArray[j]);
+    }
+
+    bubbleSort(stringArray, rows);
+
+    for (int j = 0; j < i; j++) {
+        printf("%s\n", stringArray[j]);
+
+    }
+
     return 0;
 }
 
-void bubbleSort(char arr[][11], size_t rows) {
+void bubbleSort(char arr[][STR_LEN], size_t rows) {
     int comparisons = 0, swaps = 0;
     for (int pass = 1; pass < rows; pass++) {
         printf("Pass: %d\n", pass);
         comparisons++;
         for (size_t i = 0; i < rows - pass; ++i) {
-            printf("\tComparing %s with %s\n", arr[i], arr[i+1]);
+            printf("\tComparing %s with %s\n", arr[i], arr[i + 1]);
             for (size_t j = 0; j < 11; ++j) {
-                printf("\t\t i: %zu, j: %zu, char1: %c, char2: %c\n", i, j, arr[i][j], arr[i+1][j]);
+                printf("\t\t i: %zu, j: %zu, char1: %c, char2: %c\n", i, j, arr[i][j], arr[i + 1][j]);
                 if (arr[i][j] < arr[i + 1][j]) {
                     break;
                 }
@@ -90,7 +117,7 @@ void removeSpecial(char *arr, size_t size) {
 }
 
 void swapStrings(char *elemPtr1, char *elemPtr2) {
-    char hold[9];
+    char hold[STR_LEN];
     strcpy(hold, elemPtr1);
     strcpy(elemPtr1, elemPtr2);
     strcpy(elemPtr2, hold);
