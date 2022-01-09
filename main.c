@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
 
 #define STR_LEN 20
 
@@ -20,85 +19,64 @@ void writeArrayToFile(char [][STR_LEN], char *);
 int main() {
     char string[STR_LEN] = {};
     char file_name[30], output_name[30];
-    char stringArray[50][STR_LEN] = {};
+    char timestamps[50][STR_LEN] = {};
     int i = 0;
 
-    // declare file pointer
     FILE *tsPtr;
-    // get file name from user (FINE), expecting "timestamps.txt"
+    // get file name from user, expecting "timestamps.txt"
     printf("Enter the file to be opened:\n");
     scanf("%s", file_name);
     printf("Enter the file to write to:\n");
     scanf("%s", output_name);
-    // check file name is correct (FINE)
+    // check file name is correct
     if ((tsPtr = fopen(file_name, "r")) == NULL) {
         printf("File could not be opened. Please try again:\n");
         scanf("%s", file_name);
     } else {
-        // output contents of user-chosen file, expecting timestamps.txt
-        // !! It's currently outputting everything except final string !!
-        printf("%s\n", "Timestamps");
         // continue until EOF
         while (!feof(tsPtr) && (fgets(string, STR_LEN, tsPtr) != NULL)) {
             // append strings to string array
             if (strlen(string) == STR_LEN - 1) {
-                strcpy(stringArray[i], string);
+                strcpy(timestamps[i], string);
                 i++;
             }
         }
         fclose(tsPtr);
     }
 
-    int rows = sizeof(stringArray) / sizeof(stringArray[0]);
+    int rows = sizeof(timestamps) / sizeof(timestamps[0]);
 
     for (size_t j = 0; j < rows; j++) {
         // remove special characters from string
-        // printf("%s", arr[i]);
-        removeSpecial(stringArray[j], STR_LEN);
-
-        // sort dates into YYYYMMDD
-        reformatDate(stringArray[j]);
+        removeSpecial(timestamps[j], STR_LEN);
+        // sort dates into YYYYMMDD format
+        reformatDate(timestamps[j]);
     }
-
-    bubbleSort(stringArray, rows);
-
-    writeArrayToFile(stringArray, output_name);
-
-    /* for (int j = 0; j < i; j++) {
-        printf("%s\n", stringArray[j]);
-
-    } */
+    // sort timestamps chronologically
+    bubbleSort(timestamps, rows);
+    // output sorted array to file
+    writeArrayToFile(timestamps, output_name);
 
     return 0;
 }
 
 void bubbleSort(char arr[][STR_LEN], size_t rows) {
-    int comparisons = 0, swaps = 0;
     for (int pass = 1; pass < rows; pass++) {
-        printf("Pass: %d\n", pass);
-        comparisons++;
         for (size_t i = 0; i < rows - pass; ++i) {
-            printf("\tComparing %s with %s\n", arr[i], arr[i + 1]);
             for (size_t j = 0; j < 11; ++j) {
-                printf("\t\t i: %zu, j: %zu, char1: %c, char2: %c\n", i, j, arr[i][j], arr[i + 1][j]);
                 if (arr[i][j] < arr[i + 1][j]) {
                     break;
                 }
                 if (arr[i][j] > arr[i + 1][j]) {
-                    printf("\t\tSwapping: %s with %s\n", arr[i], arr[i + 1]);
                     swapStrings(arr[i], arr[i + 1]);
-                    swaps++;
                     break;
                 }
             }
         }
-        for (int i = 0; i < rows; i++) {
-            printf("\tArray: %s\n", arr[i]);
-        }
     }
 
-    printf("Number of swaps: %d\n", swaps);
-    printf("Number of comparisons: %d\n", comparisons);
+  //  printf("Number of swaps: %d\n", swaps);
+  //  printf("Number of comparisons: %d\n", comparisons);
 }
 
 // swapChars two values
